@@ -167,8 +167,109 @@ void consulta(no agenda)
 
 
 // Consulta compromissos por palavra
+void consulta_palavra(no agenda)
+{
+    char str[81], compromisso[81];
+    char * tok;
+    int j;
+
+    system("cls");
+    printf("\t\t\tAGENDA\n");
+
+    if (agenda == NULL)
+    {
+        printf("\n\n\tSem compromissos na agenda!\n");
+        system("pause");
+        return;
+    }
+
+    printf("\n\n\tConsultar compromissos que contenham a palavra: ");
+    gets(str);
+    for(j = 0; str[j]; j++)
+        str[j] = tolower(str[j]);
+
+    no q = agenda;
+    int i = 1;
+    
+    while (q != NULL)
+    {
+        strcpy(compromisso, q->compromisso);
+
+        tok = strtok(compromisso, " ,.;-/_\n");
+
+        do
+        {    
+            for(j = 0; tok[j]; j++)
+                tok[j] = tolower(tok[j]);
+            if (strcmp(tok,str) == 0)
+                printf("\n\tCompromisso %d: %s\n\tData: %d/%d/%d\n\tHora: %dh%d\n", i++, q->compromisso, q->dia, q->mes, q->ano, q->hora, q->minuto);
+            tok = strtok(NULL, " ,.;-/_\n" );
+        } while (tok != NULL);
+        q = q->prox;
+    }
+
+    if (i == 1)
+        printf("\n\tNenhum compromisso encontrado com a palavra: %s\n", str);
+    
+    system("pause");
+    return;
+}
+
 
 // salva em agenda.txt
+void salva_disco(no agenda)
+{
+    FILE * arquivo;
+    char compromisso[100], data[5];
+
+    system("cls");
+    printf("\t\t\tAGENDA\n");
+
+    if (agenda == NULL)
+    {
+        printf("\n\n\tNao ha compromissos para salvar em disco!\n\t");
+        system("pause");
+        return;
+    }
+
+    if ((arquivo = fopen("agenda.txt", "w")) == NULL)
+    {
+        printf("\n\n\tNao foi possivel abrir/criar o arquivo agenda.txt.\n\n\t");
+        system("pause");
+        return;
+    }
+
+    no q = agenda;
+    while (q != NULL)
+    {
+        strcpy(compromisso, "Compromisso: ");
+        strcat(compromisso, q->compromisso);
+        strcat(compromisso, "\ndata: ");
+        itoa(q->dia, data, 10);
+        strcat(compromisso, data );
+        strcat(compromisso, "/");
+        itoa(q->mes, data, 10);
+        strcat(compromisso, data );
+        strcat(compromisso, "/");
+        itoa(q->ano, data, 10);
+        strcat(compromisso, data );
+        strcat(compromisso, "\nhora: ");
+        itoa(q->hora, data, 10);
+        strcat(compromisso, data );
+        strcat(compromisso, ":");
+        itoa(q->minuto, data, 10);
+        strcat(compromisso, data );
+        strcat(compromisso, "\n\n");
+
+        fputs(compromisso, arquivo);
+
+        q = q->prox;
+    }
+    fclose(arquivo);
+    printf("\n\n\tCompromissos salvos em disco!\n\t");
+    system("pause");
+    return;
+}
 
 // le os dados
 
@@ -221,10 +322,12 @@ int main()
             
             case '4':
                 // consultar compromisso por palavra
+                consulta_palavra(compromissos);
                 break;
             
             case '5':
                 // salvar compromisso em disco
+                salva_disco(compromissos);
                 break;
             
             case '6':
