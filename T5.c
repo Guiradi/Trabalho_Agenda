@@ -8,10 +8,10 @@ typedef struct reg * no;
 struct reg
 {
     // Struct dos compromissos
-    char compromisso [81];
-    int dia, mes, ano, hora, minuto;
-    float data, horario;
-    struct reg * prox;
+    char compromisso [81]; // Descricao do Compromisso
+    int dia, mes, ano, hora, minuto; // Dia/Mes/Ano e Hora:Minuto do compromisso
+    float data, horario; // Floats definidos para calcular o tempo do compromisso e comparar
+    struct reg * prox; // Proximo no
 };
 
 // Insere compromissos
@@ -68,19 +68,20 @@ void insere(no * agenda)
     system("pause");
 }
 
-void leitura(no agenda)
+/*void leitura(no agenda)
 {
     system("cls");
     no p = agenda;
     while (p != NULL)
     {
-        printf("\n\nData: %d/%d/%d", p->dia, p->mes, p->ano);
-        printf("\nHora: %d:%d", p->hora, p->minuto);
+        printf("\n\nData: %2d/%2d/%2d", p->dia, p->mes, p->ano);
+        printf("\nHora: %2d:%2d", p->hora, p->minuto);
         printf("\nCompromisso: %s\n\n", p->compromisso);
         p = p->prox;
     }
+    printf("\t");
     system("pause");
-}
+}*/
 // Remove compromissos digitando a data
 void remover(no * agenda)
 {
@@ -92,7 +93,7 @@ void remover(no * agenda)
 
     if (*agenda == NULL)
     {
-        printf("\n\n\tSem compromissos para apagar!\n\n");
+        printf("\n\n\tSem compromissos para apagar!\n\n\t");
         system("pause");
         return;
     }
@@ -103,7 +104,7 @@ void remover(no * agenda)
         scanf("%d/%d/%d", &p->dia, &p->mes, &p->ano);
     } while ((p->dia > 31) && (p->dia < 1) && (p->mes < 1) && (p->mes > 12) && (p-> ano < 0));
 
-    p->data = p->dia + p->mes * 30.5 + p->ano * 365.25;
+    p->data = p->dia + (p->mes * 30.5) + (p->ano * 365.25);
 
     no q = *agenda;
     while((q != NULL) && (q->data <= p->data))
@@ -121,6 +122,7 @@ void remover(no * agenda)
     }
 
     printf("\n\n\tCompromissos de hoje e anteriores apagados!\n\n");
+    printf("\t");
     system("pause");
 }
 
@@ -135,7 +137,7 @@ void consulta(no agenda)
 
     if (agenda == NULL)
     {
-        printf("\n\n\tSem compromissos na agenda!\n");
+        printf("\n\n\tSem compromissos na agenda!\n\t");
         system("pause");
         return;
     }
@@ -161,6 +163,7 @@ void consulta(no agenda)
     if (i == 1)
         printf("\n\tNenhum compromisso encontrado na data: %d/%d/%d\n", dia, mes, ano);
     
+    printf("\t");
     system("pause");
     return;
 }
@@ -178,7 +181,7 @@ void consulta_palavra(no agenda)
 
     if (agenda == NULL)
     {
-        printf("\n\n\tSem compromissos na agenda!\n");
+        printf("\n\n\tSem compromissos na agenda!\n\t");
         system("pause");
         return;
     }
@@ -211,6 +214,8 @@ void consulta_palavra(no agenda)
 
     if (i == 1)
         printf("\n\tNenhum compromisso encontrado com a palavra: %s\n", str);
+
+    printf("\t");
     
     system("pause");
     return;
@@ -326,11 +331,13 @@ void le_dados(no * agenda)
                         p = q;
                     }
                     else
-                        p->prox = q;
+                    {
+                    	q->prox = NULL;
+						p->prox = q;
+					}
                 }
             }
         }
-        printf("\nlinha");
     }
 
     *agenda = p;
@@ -339,8 +346,6 @@ void le_dados(no * agenda)
     system("pause");
     return;
 }
-
-// termina a execução
 
 // MENU
 int main()
@@ -368,7 +373,7 @@ int main()
         do
         {
             escolha = getch();
-        } while ((escolha < '0') && (escolha > '7'));
+        } while ((escolha < '0') && (escolha > '6'));
 
         switch (escolha)
         {
@@ -402,19 +407,17 @@ int main()
                 le_dados(&compromissos);
                 break;
             
-            case '7':
-                //
-                leitura(compromissos);
-                break;
+            /*case '7':
+                // ler todos os compromissos
+                ler_lista(compromissos);
+                break;*/
 
             case '0':
                 break;
 
             default:
-                system("cls");
-                printf("Erro encontrado. Favor consultar o desenvolvedor do programa.\n");
+                printf("\n\n\nDigite um dos numeros do menu!\n\t");
                 system("pause");
-                return;
         }
     } while (escolha != '0');
 
