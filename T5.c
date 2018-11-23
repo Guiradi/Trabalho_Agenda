@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <conio.h>
 #include <windows.h>
 
@@ -106,13 +105,18 @@ void remover(no * agenda)
 
     p->data = p->dia + p->mes * 30.5 + p->ano * 365.25;
 
-    // APAGAR
     no q = *agenda;
-    while((q) && (q->data <= p->data))
-    {
-        no q = *agenda;
-		no r = q;
+    while((q != NULL) && (q->data <= p->data))
         q = q->prox;
+    no r = (*agenda);
+    if (q == NULL)
+    {
+        (*agenda) = NULL;
+        free(r);
+    }
+    else
+    {
+        (*agenda) = q;
         free(r);
     }
 
