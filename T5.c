@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
-#include <windows.h>
+#include <string.h>
 
 typedef struct reg * no;
 
@@ -184,6 +184,7 @@ void consulta_palavra(no agenda)
     }
 
     printf("\n\n\tConsultar compromissos que contenham a palavra: ");
+    fflush(stdin);
     gets(str);
     for(j = 0; str[j]; j++)
         str[j] = tolower(str[j]);
@@ -220,7 +221,7 @@ void consulta_palavra(no agenda)
 void salva_disco(no agenda)
 {
     FILE * arquivo;
-    char compromisso[100], data[5];
+    char compromisso[150], data[5];
 
     system("cls");
     printf("\t\t\tAGENDA\n");
@@ -234,7 +235,7 @@ void salva_disco(no agenda)
 
     if ((arquivo = fopen("agenda.txt", "w")) == NULL)
     {
-        printf("\n\n\tNao foi possivel abrir/criar o arquivo agenda.txt.\n\n\t");
+        printf("\n\n\tNao foi possivel criar o arquivo agenda.txt.\n\n\t");
         system("pause");
         return;
     }
@@ -244,7 +245,7 @@ void salva_disco(no agenda)
     {
         strcpy(compromisso, "Compromisso: ");
         strcat(compromisso, q->compromisso);
-        strcat(compromisso, "\ndata: ");
+        strcat(compromisso, "\nData: ");
         itoa(q->dia, data, 10);
         strcat(compromisso, data );
         strcat(compromisso, "/");
@@ -253,7 +254,7 @@ void salva_disco(no agenda)
         strcat(compromisso, "/");
         itoa(q->ano, data, 10);
         strcat(compromisso, data );
-        strcat(compromisso, "\nhora: ");
+        strcat(compromisso, "\nHora: ");
         itoa(q->hora, data, 10);
         strcat(compromisso, data );
         strcat(compromisso, ":");
@@ -272,6 +273,72 @@ void salva_disco(no agenda)
 }
 
 // le os dados
+void le_dados(no * agenda)
+{
+    FILE * arquivo;
+    char linha[101];
+    char * tok;
+    no q = (no) malloc (sizeof(struct reg)), p = NULL;
+
+    system("cls");
+    printf("\t\t\tAGENDA\n");
+
+    if ((arquivo = fopen("agenda.txt", "r")) == NULL)
+    {
+        printf("\n\n\tNao foi possivel abrir o arquivo agenda.txt.\n\n\t");
+        system("pause");
+        return;
+    }
+
+    while(fgets(linha,100,arquivo) != NULL)
+    {
+        tok = strtok(linha, ": ");
+        if (strcmp("Compromisso", tok) == 0)
+        {
+			tok = strtok(NULL, "\n");
+            strcpy(q->compromisso, tok);
+        }
+        else 
+        {
+            if (strcmp("Data", tok) == 0)
+            {
+                tok = strtok(NULL, "/");
+                q->dia = atoi(tok);
+                tok = strtok(NULL, "/");
+                q->mes = atoi(tok);
+                tok = strtok(NULL, " \n");
+                q->ano = atoi(tok);
+                q->data = q->dia + q->mes * 30.5 + q->ano * 365.25;
+            }
+            else
+            {
+                if (strcmp("Hora", tok) == 0)
+                {
+                    tok = strtok(NULL, ":");
+                    q->hora = atoi(tok);
+                    tok = strtok(NULL, " \n");
+                    q->minuto = atoi(tok);
+                    q->horario = q->hora*60 + q->minuto;
+
+                    if (p == NULL)
+                    {
+                        q->prox = NULL;
+                        p = q;
+                    }
+                    else
+                        p->prox = q;
+                }
+            }
+        }
+        printf("\nlinha");
+    }
+
+    *agenda = p;
+
+    printf("\n\n\tDados carregados!\n\t");
+    system("pause");
+    return;
+}
 
 // termina a execução
 
@@ -332,6 +399,7 @@ int main()
             
             case '6':
                 // ler compromisso em disco
+                le_dados(&compromissos);
                 break;
             
             case '7':
@@ -349,4 +417,9 @@ int main()
                 return;
         }
     } while (escolha != '0');
+
+    system("cls");
+    printf("Obrigado por usar a agenda!\n");
+    system("pause");
+    return 0;
 }
