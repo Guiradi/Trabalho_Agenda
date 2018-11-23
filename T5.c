@@ -125,6 +125,46 @@ void remover(no * agenda)
 }
 
 // Consulta compromissos por data
+void consulta(no agenda)
+{
+    int dia, mes, ano;
+    float data;
+
+    system("cls");
+    printf("\t\t\tAGENDA\n");
+
+    if (agenda == NULL)
+    {
+        printf("\n\n\tSem compromissos na agenda!\n");
+        system("pause");
+        return;
+    }
+
+    do
+    {
+        printf("\n\n\tDigite a data que deseja pesquisar (dd/mm/aaaa): ");
+        scanf("%d/%d/%d", &dia, &mes, &ano);
+    } while ((dia > 31) && (dia < 1) && (mes < 1) && (mes > 12) && (ano < 0));
+
+    data = dia + mes * 30.5 + ano * 365.25;
+
+    no q = agenda;
+    int i = 1;
+    
+    while (q != NULL)
+    {
+        if (q->data == data)
+            printf("\n\tCompromisso %d: %s\n\tData: %d/%d/%d\n\tHora: %dh%d\n", i++, q->compromisso, q->dia, q->mes, q->ano, q->hora, q->minuto);
+        q = q->prox;
+    }
+
+    if (i == 1)
+        printf("\n\tNenhum compromisso encontrado na data: %d/%d/%d\n", dia, mes, ano);
+    
+    system("pause");
+    return;
+}
+
 
 // Consulta compromissos por palavra
 
@@ -176,6 +216,7 @@ int main()
 
             case '3':
                 // consultar compromisso por data
+                consulta(compromissos);
                 break;
             
             case '4':
