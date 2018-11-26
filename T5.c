@@ -1,3 +1,9 @@
+/* Trabalho 5 - Agenda
+ * Desenvolvido por:
+ * Guilherme Ponsoni Ferreira	-	RA: 171025687
+ * Rafael Ragozoni Conrado		-	RA: 181022745
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
@@ -82,6 +88,7 @@ void insere(no * agenda)
     printf("\t");
     system("pause");
 }*/
+
 // Remove compromissos digitando a data
 void remover(no * agenda)
 {
@@ -281,9 +288,10 @@ void salva_disco(no agenda)
 void le_dados(no * agenda)
 {
     FILE * arquivo;
-    char linha[101];
+    char linha[101], compromisso[81];
+    int dia, mes, ano, hora, minuto;
+    float data, horario;
     char * tok;
-    no q = (no) malloc (sizeof(struct reg)), p = NULL;
 
     system("cls");
     printf("\t\t\tAGENDA\n");
@@ -298,50 +306,68 @@ void le_dados(no * agenda)
     while(fgets(linha,100,arquivo) != NULL)
     {
         tok = strtok(linha, ": ");
+
         if (strcmp("Compromisso", tok) == 0)
         {
 			tok = strtok(NULL, "\n");
-            strcpy(q->compromisso, tok);
+            strcpy(compromisso, tok);
         }
         else 
         {
             if (strcmp("Data", tok) == 0)
             {
                 tok = strtok(NULL, "/");
-                q->dia = atoi(tok);
+                dia = atoi(tok);
                 tok = strtok(NULL, "/");
-                q->mes = atoi(tok);
+                mes = atoi(tok);
                 tok = strtok(NULL, " \n");
-                q->ano = atoi(tok);
-                q->data = q->dia + q->mes * 30.5 + q->ano * 365.25;
+                ano = atoi(tok);
+                data = dia + mes * 30.5 + ano * 365.25;
             }
             else
             {
                 if (strcmp("Hora", tok) == 0)
                 {
                     tok = strtok(NULL, ":");
-                    q->hora = atoi(tok);
+                    hora = atoi(tok);
                     tok = strtok(NULL, " \n");
-                    q->minuto = atoi(tok);
-                    q->horario = q->hora*60 + q->minuto;
+                    minuto = atoi(tok);
+                    horario = hora*60 + minuto;
 
-                    if (p == NULL)
+                    no p = (no)malloc(sizeof(struct reg));
+                    strcpy(p->compromisso, compromisso);
+                    p->dia = dia;
+                    p->mes = mes;
+                    p->ano = ano;
+                    p->data = data;
+                    p->hora = hora;
+                    p->minuto = minuto;
+                    p->horario = horario;
+
+                    if ((*agenda) == NULL || p->data < (*agenda)->data)
                     {
-                        q->prox = NULL;
-                        p = q;
+                        p->prox = (*agenda);
+                        (*agenda) = p;
                     }
                     else
                     {
-                    	q->prox = NULL;
-						p->prox = q;
-					}
+                        no q = (*agenda), r;
+                        while (q != NULL && q->data <= p->data)
+                        {
+                            if (q->data == p->data)
+                                if (q->horario > p->horario)
+                                    break;
+                            r = q;
+                            q = q -> prox;
+                        }
+                        p->prox = q;
+                        r->prox = p;
+                    }
                 }
             }
         }
     }
-
-    *agenda = p;
-
+    fclose(arquivo);
     printf("\n\n\tDados carregados!\n\t");
     system("pause");
     return;
@@ -409,7 +435,7 @@ int main()
             
             /*case '7':
                 // ler todos os compromissos
-                ler_lista(compromissos);
+                leitura(compromissos);
                 break;*/
 
             case '0':
